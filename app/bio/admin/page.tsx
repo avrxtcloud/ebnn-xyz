@@ -21,15 +21,31 @@ export default function AdminPage() {
     }, []);
 
     async function checkUser() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { session } } = await supabase.auth.getSession();
+        const user = session?.user;
         setUser(user);
 
-        if (user) {
-            // Here you would optimally check Discord roles via an API route that uses the provider token
-            // For this demo, we will just assume if they are logged in via Discord, they are admin
-            // OR checks strict email allowlist
-            setAuthorized(true);
-            fetchData();
+        if (user && session?.provider_token) {
+            try {
+                // Verify Discord Role
+                const res = await fetch('/api/auth/discord-role', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ accessToken: session.provider_token })
+                });
+                const data = await res.json();
+
+                if (data.authorized) {
+                    setAuthorized(true);
+                    fetchData();
+                } else {
+                    alert("Access Denied: You do not have the required Discord Role.");
+                }
+            } catch (err) {
+                console.error("Auth Check Failed", err);
+            }
+        } else if (user) {
+            console.warn("No provider token found. Re-login may be required.");
         }
         setLoading(false);
     }

@@ -11,7 +11,7 @@ export default async function BioPage() {
     const { data: profile } = await supabase.from('bio_profile').select('*').single();
 
     // Fetch Links
-    const { data: links } = await supabase.from('bio_links').select('*').order('sort_order', { ascending: true });
+    const { data: links } = await supabase.from('bio_links').select('*').eq('is_active', true).order('sort_order', { ascending: true });
 
     // Default Fallback Data if DB is empty or connection fails
     const safeProfile = profile || {

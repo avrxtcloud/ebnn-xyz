@@ -23,7 +23,7 @@ CREATE TABLE bio_links (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Basic row security (you can refine this later)
+-- Basic row security
 ALTER TABLE bio_profile ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bio_links ENABLE ROW LEVEL SECURITY;
 
@@ -31,10 +31,19 @@ ALTER TABLE bio_links ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow public read access on bio_profile" ON bio_profile FOR SELECT USING (true);
 CREATE POLICY "Allow public read access on bio_links" ON bio_links FOR SELECT USING (true);
 
--- Allow write access only to authenticated users (admin logic will be handled in app)
--- For tighter security, you could add checks for specific user IDs here
+-- Allow write access only to authenticated users
 CREATE POLICY "Allow authenticated update on bio_profile" ON bio_profile FOR ALL USING (auth.role() = 'authenticated');
 CREATE POLICY "Allow authenticated update on bio_links" ON bio_links FOR ALL USING (auth.role() = 'authenticated');
+
+-- STORAGE SETUP (Run this if you haven't created 'uploads' bucket in UI)
+-- Note: 'storage' schema comes pre-installed in Supabase
+INSERT INTO storage.buckets (id, name, public) VALUES ('uploads', 'uploads', true) ON CONFLICT DO NOTHING;
+
+-- Storage Policies
+CREATE POLICY "Public Access" ON storage.objects FOR SELECT USING ( bucket_id = 'uploads' );
+CREATE POLICY "Auth Upload" ON storage.objects FOR INSERT WITH CHECK ( bucket_id = 'uploads' AND auth.role() = 'authenticated' );
+CREATE POLICY "Auth Update" ON storage.objects FOR UPDATE USING ( bucket_id = 'uploads' AND auth.role() = 'authenticated' );
+CREATE POLICY "Auth Delete" ON storage.objects FOR DELETE USING ( bucket_id = 'uploads' AND auth.role() = 'authenticated' );
 
 -- Seed Data (Initial Setup)
 INSERT INTO bio_profile (name, bio, avatar_url, music_title, music_artist, music_url, music_cover_url)

@@ -226,138 +226,132 @@ export default function AdminPage() {
                     <form onSubmit={updateProfile} id="mainForm">
 
                         {/* TAB: PROFILE */}
-                        {activeTab === 'profile' && (
-                            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <section className="glass p-6 rounded-2xl space-y-4">
-                                    <h2 className="text-blue-400 font-bold uppercase tracking-widest text-sm flex items-center gap-2"><ShieldCheck size={16} /> Identity</h2>
-                                    <div className="grid gap-4">
-                                        <input name="name" defaultValue={profile.name} placeholder="Display Name" className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-3 text-white font-bold" />
-                                        <textarea name="bio" defaultValue={profile.bio} placeholder="Bio / Tagline" className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm" rows={2} />
+                        <div className={`space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 ${activeTab === 'profile' ? 'block' : 'hidden'}`}>
+                            <section className="glass p-6 rounded-2xl space-y-4">
+                                <h2 className="text-blue-400 font-bold uppercase tracking-widest text-sm flex items-center gap-2"><ShieldCheck size={16} /> Identity</h2>
+                                <div className="grid gap-4">
+                                    <input name="name" defaultValue={profile.name} placeholder="Display Name" className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-3 text-white font-bold" />
+                                    <textarea name="bio" defaultValue={profile.bio} placeholder="Bio / Tagline" className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm" rows={2} />
+                                </div>
+                                <div className="flex items-center gap-4 pt-4 border-t border-white/5">
+                                    <div className="w-16 h-16 rounded-full bg-slate-800 overflow-hidden shrink-0 border border-white/10">
+                                        <img src={profile.avatar_url} className="w-full h-full object-cover" />
                                     </div>
-                                    <div className="flex items-center gap-4 pt-4 border-t border-white/5">
-                                        <div className="w-16 h-16 rounded-full bg-slate-800 overflow-hidden shrink-0 border border-white/10">
-                                            <img src={profile.avatar_url} className="w-full h-full object-cover" />
-                                        </div>
-                                        <div className="grow">
-                                            <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Profile Picture</label>
-                                            <input type="file" name="avatar_file" accept="image/*" className="w-full text-xs text-slate-400" />
-                                        </div>
+                                    <div className="grow">
+                                        <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Profile Picture</label>
+                                        <input type="file" name="avatar_file" accept="image/*" className="w-full text-xs text-slate-400" />
                                     </div>
-                                </section>
+                                </div>
+                            </section>
 
-                                <section className="glass p-6 rounded-2xl space-y-4">
-                                    <h2 className="text-blue-400 font-bold uppercase tracking-widest text-sm flex items-center gap-2"><Globe size={16} /> Social Icons</h2>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <input name="social_twitter" defaultValue={profile.socials?.twitter} placeholder="X (Twitter) URL" className="bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-xs" />
-                                        <input name="social_instagram" defaultValue={profile.socials?.instagram} placeholder="Instagram URL" className="bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-xs" />
-                                        <input name="social_github" defaultValue={profile.socials?.github} placeholder="GitHub URL" className="bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-xs" />
-                                        <input name="social_linkedin" defaultValue={profile.socials?.linkedin} placeholder="LinkedIn URL" className="bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-xs" />
-                                    </div>
-                                </section>
+                            <section className="glass p-6 rounded-2xl space-y-4">
+                                <h2 className="text-blue-400 font-bold uppercase tracking-widest text-sm flex items-center gap-2"><Globe size={16} /> Social Icons</h2>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <input name="social_twitter" defaultValue={profile.socials?.twitter} placeholder="X (Twitter) URL" className="bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-xs" />
+                                    <input name="social_instagram" defaultValue={profile.socials?.instagram} placeholder="Instagram URL" className="bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-xs" />
+                                    <input name="social_github" defaultValue={profile.socials?.github} placeholder="GitHub URL" className="bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-xs" />
+                                    <input name="social_linkedin" defaultValue={profile.socials?.linkedin} placeholder="LinkedIn URL" className="bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-xs" />
+                                </div>
+                            </section>
 
-                                <section className="glass p-6 rounded-2xl space-y-4">
-                                    <h2 className="text-blue-400 font-bold uppercase tracking-widest text-sm flex items-center gap-2"><Music size={16} /> Audio Player</h2>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <input name="music_title" defaultValue={profile.music_title} placeholder="Song Title" className="bg-slate-900/50 border-white/10 rounded-lg px-3 py-2 text-xs" />
-                                        <input name="music_artist" defaultValue={profile.music_artist} placeholder="Artist" className="bg-slate-900/50 border-white/10 rounded-lg px-3 py-2 text-xs" />
-                                    </div>
-                                    <div className="pt-2">
-                                        <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Audio File (MP3)</label>
-                                        <input type="file" name="music_file" accept="audio/*" className="w-full text-xs text-slate-400" />
-                                    </div>
-                                    <div className="pt-2">
-                                        <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Cover Art</label>
-                                        <input type="file" name="cover_file" accept="image/*" className="w-full text-xs text-slate-400" />
-                                    </div>
-                                </section>
-                            </div>
-                        )}
+                            <section className="glass p-6 rounded-2xl space-y-4">
+                                <h2 className="text-blue-400 font-bold uppercase tracking-widest text-sm flex items-center gap-2"><Music size={16} /> Audio Player</h2>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <input name="music_title" defaultValue={profile.music_title} placeholder="Song Title" className="bg-slate-900/50 border-white/10 rounded-lg px-3 py-2 text-xs" />
+                                    <input name="music_artist" defaultValue={profile.music_artist} placeholder="Artist" className="bg-slate-900/50 border-white/10 rounded-lg px-3 py-2 text-xs" />
+                                </div>
+                                <div className="pt-2">
+                                    <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Audio File (MP3)</label>
+                                    <input type="file" name="music_file" accept="audio/*" className="w-full text-xs text-slate-400" />
+                                </div>
+                                <div className="pt-2">
+                                    <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Cover Art</label>
+                                    <input type="file" name="cover_file" accept="image/*" className="w-full text-xs text-slate-400" />
+                                </div>
+                            </section>
+                        </div>
 
                         {/* TAB: LINKS */}
-                        {activeTab === 'links' && (
-                            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
-                                <div className="flex gap-2 overflow-x-auto pb-2">
-                                    <button type="button" onClick={() => addLink('classic')} className="px-4 py-2 bg-blue-600 rounded-lg text-xs font-bold whitespace-nowrap">+ Link</button>
-                                    <button type="button" onClick={() => addLink('video')} className="px-4 py-2 bg-red-600 rounded-lg text-xs font-bold whitespace-nowrap">+ Video Embed</button>
-                                    <button type="button" onClick={() => addLink('header')} className="px-4 py-2 bg-slate-700 rounded-lg text-xs font-bold whitespace-nowrap">+ Header</button>
-                                </div>
+                        <div className={`space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20 ${activeTab === 'links' ? 'block' : 'hidden'}`}>
+                            <div className="flex gap-2 overflow-x-auto pb-2">
+                                <button type="button" onClick={() => addLink('classic')} className="px-4 py-2 bg-blue-600 rounded-lg text-xs font-bold whitespace-nowrap">+ Link</button>
+                                <button type="button" onClick={() => addLink('video')} className="px-4 py-2 bg-red-600 rounded-lg text-xs font-bold whitespace-nowrap">+ Video Embed</button>
+                                <button type="button" onClick={() => addLink('header')} className="px-4 py-2 bg-slate-700 rounded-lg text-xs font-bold whitespace-nowrap">+ Header</button>
+                            </div>
 
-                                <div className="space-y-3">
-                                    {links.map((link, idx) => (
-                                        <div key={link.id} className={`p-4 rounded-xl border flex flex-col gap-3 ${link.is_active ? 'bg-slate-900/60 border-white/5' : 'bg-red-900/10 border-red-500/20'}`}>
-                                            <div className="flex gap-3 items-center">
-                                                <div className="flex flex-col gap-1">
-                                                    <button type="button" onClick={() => moveLink(idx, 'up')} className="text-slate-500 hover:text-white" disabled={idx === 0}>▲</button>
-                                                    <button type="button" onClick={() => moveLink(idx, 'down')} className="text-slate-500 hover:text-white" disabled={idx === links.length - 1}>▼</button>
-                                                </div>
-                                                <div className="flex-grow space-y-2">
-                                                    <div className="flex gap-2">
-                                                        <input value={link.label} onChange={e => updateLink(link.id, 'label', e.target.value)} className="bg-transparent border-b border-white/10 focus:border-blue-500 w-full font-bold text-sm outline-none transition-colors" placeholder="Label" />
-                                                        {link.type !== 'header' && (
-                                                            <input value={link.icon} onChange={e => updateLink(link.id, 'icon', e.target.value)} className="bg-transparent border-b border-white/10 focus:border-blue-500 w-20 text-xs text-right outline-none transition-colors" placeholder="Icon" />
-                                                        )}
-                                                    </div>
+                            <div className="space-y-3">
+                                {links.map((link, idx) => (
+                                    <div key={link.id} className={`p-4 rounded-xl border flex flex-col gap-3 ${link.is_active ? 'bg-slate-900/60 border-white/5' : 'bg-red-900/10 border-red-500/20'}`}>
+                                        <div className="flex gap-3 items-center">
+                                            <div className="flex flex-col gap-1">
+                                                <button type="button" onClick={() => moveLink(idx, 'up')} className="text-slate-500 hover:text-white" disabled={idx === 0}>▲</button>
+                                                <button type="button" onClick={() => moveLink(idx, 'down')} className="text-slate-500 hover:text-white" disabled={idx === links.length - 1}>▼</button>
+                                            </div>
+                                            <div className="flex-grow space-y-2">
+                                                <div className="flex gap-2">
+                                                    <input value={link.label} onChange={e => updateLink(link.id, 'label', e.target.value)} className="bg-transparent border-b border-white/10 focus:border-blue-500 w-full font-bold text-sm outline-none transition-colors" placeholder="Label" />
                                                     {link.type !== 'header' && (
-                                                        <input value={link.url} onChange={e => updateLink(link.id, 'url', e.target.value)} className="bg-transparent border-none w-full text-xs text-slate-500 focus:text-blue-400 outline-none font-mono" placeholder={link.type === 'video' ? "YouTube URL" : "https://..."} />
+                                                        <input value={link.icon} onChange={e => updateLink(link.id, 'icon', e.target.value)} className="bg-transparent border-b border-white/10 focus:border-blue-500 w-20 text-xs text-right outline-none transition-colors" placeholder="Icon" />
                                                     )}
                                                 </div>
-                                                <div className="flex flex-col gap-2">
-                                                    <button type="button" onClick={() => updateLink(link.id, 'is_active', !link.is_active)} className={link.is_active ? 'text-green-400' : 'text-slate-600'}><Eye size={18} /></button>
-                                                    <button type="button" onClick={() => deleteLink(link.id)} className="text-red-900 hover:text-red-500"><Trash2 size={18} /></button>
-                                                </div>
+                                                {link.type !== 'header' && (
+                                                    <input value={link.url} onChange={e => updateLink(link.id, 'url', e.target.value)} className="bg-transparent border-none w-full text-xs text-slate-500 focus:text-blue-400 outline-none font-mono" placeholder={link.type === 'video' ? "YouTube URL" : "https://..."} />
+                                                )}
                                             </div>
-                                            {link.type === 'video' && <div className="text-[10px] text-red-400 font-mono uppercase tracking-widest bg-red-900/10 p-1 rounded text-center">Video Embed</div>}
-                                            {link.type === 'header' && <div className="text-[10px] text-slate-400 font-mono uppercase tracking-widest bg-slate-800 p-1 rounded text-center">Section Header</div>}
+                                            <div className="flex flex-col gap-2">
+                                                <button type="button" onClick={() => updateLink(link.id, 'is_active', !link.is_active)} className={link.is_active ? 'text-green-400' : 'text-slate-600'}><Eye size={18} /></button>
+                                                <button type="button" onClick={() => deleteLink(link.id)} className="text-red-900 hover:text-red-500"><Trash2 size={18} /></button>
+                                            </div>
                                         </div>
-                                    ))}
-                                    {links.length === 0 && <div className="text-center text-slate-500 py-10 font-mono text-xs">No active modules.</div>}
-                                </div>
+                                        {link.type === 'video' && <div className="text-[10px] text-red-400 font-mono uppercase tracking-widest bg-red-900/10 p-1 rounded text-center">Video Embed</div>}
+                                        {link.type === 'header' && <div className="text-[10px] text-slate-400 font-mono uppercase tracking-widest bg-slate-800 p-1 rounded text-center">Section Header</div>}
+                                    </div>
+                                ))}
+                                {links.length === 0 && <div className="text-center text-slate-500 py-10 font-mono text-xs">No active modules.</div>}
                             </div>
-                        )}
+                        </div>
 
                         {/* TAB: APPEARANCE */}
-                        {activeTab === 'appearance' && (
-                            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <section className="glass p-6 rounded-2xl space-y-4">
-                                    <h2 className="text-blue-400 font-bold uppercase tracking-widest text-sm flex items-center gap-2"><Palette size={16} /> Theme Engine</h2>
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="text-[10px] uppercase font-bold text-slate-500 mb-2 block">Primary Accent Color</label>
-                                            <div className="flex gap-3">
-                                                <input type="color" name="theme_color" defaultValue={profile.theme_color || '#3b82f6'} className="w-12 h-12 rounded-lg bg-transparent cursor-pointer" />
-                                                <div className="flex-grow pt-3 text-xs text-slate-400 font-mono">{profile.theme_color || '#3b82f6'}</div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="text-[10px] uppercase font-bold text-slate-500 mb-2 block">Font Family</label>
-                                            <select name="font_family" defaultValue={profile.font_family} className="w-full bg-slate-900 border border-white/10 rounded-lg p-3 text-xs text-white">
-                                                <option value="Outfit">Modern (Outfit)</option>
-                                                <option value="Inter">Clean (Inter)</option>
-                                                <option value="Space Mono">Cyber (Space Mono)</option>
-                                                <option value="Playfair Display">Elegant (Playfair)</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="text-[10px] uppercase font-bold text-slate-500 mb-2 block">Wallpaper</label>
-                                            {profile.bg_image_url && <img src={profile.bg_image_url} className="w-full h-32 object-cover rounded-lg mb-2 border border-blue-500/20" />}
-                                            <input type="file" name="bg_file" accept="image/*" className="w-full text-xs text-slate-400" />
+                        <div className={`space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 ${activeTab === 'appearance' ? 'block' : 'hidden'}`}>
+                            <section className="glass p-6 rounded-2xl space-y-4">
+                                <h2 className="text-blue-400 font-bold uppercase tracking-widest text-sm flex items-center gap-2"><Palette size={16} /> Theme Engine</h2>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-slate-500 mb-2 block">Primary Accent Color</label>
+                                        <div className="flex gap-3">
+                                            <input type="color" name="theme_color" defaultValue={profile.theme_color || '#3b82f6'} className="w-12 h-12 rounded-lg bg-transparent cursor-pointer" />
+                                            <div className="flex-grow pt-3 text-xs text-slate-400 font-mono">{profile.theme_color || '#3b82f6'}</div>
                                         </div>
                                     </div>
-                                </section>
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-slate-500 mb-2 block">Font Family</label>
+                                        <select name="font_family" defaultValue={profile.font_family} className="w-full bg-slate-900 border border-white/10 rounded-lg p-3 text-xs text-white">
+                                            <option value="Outfit">Modern (Outfit)</option>
+                                            <option value="Inter">Clean (Inter)</option>
+                                            <option value="Space Mono">Cyber (Space Mono)</option>
+                                            <option value="Playfair Display">Elegant (Playfair)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-slate-500 mb-2 block">Wallpaper</label>
+                                        {profile.bg_image_url && <img src={profile.bg_image_url} className="w-full h-32 object-cover rounded-lg mb-2 border border-blue-500/20" />}
+                                        <input type="file" name="bg_file" accept="image/*" className="w-full text-xs text-slate-400" />
+                                    </div>
+                                </div>
+                            </section>
 
-                                <section className="glass p-6 rounded-2xl space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <h2 className="text-blue-400 font-bold uppercase tracking-widest text-sm flex items-center gap-2"><Map size={16} /> 3D Geo-Location</h2>
-                                        <input type="checkbox" name="show_3d_map" defaultChecked={profile.show_3d_map} className="accent-blue-500 w-5 h-5" />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <input name="map_lat" type="number" step="any" defaultValue={profile.map_lat} placeholder="Latitude" className="bg-slate-900/50 border-white/10 rounded-lg px-3 py-2 text-xs" />
-                                        <input name="map_lng" type="number" step="any" defaultValue={profile.map_lng} placeholder="Longitude" className="bg-slate-900/50 border-white/10 rounded-lg px-3 py-2 text-xs" />
-                                    </div>
-                                    <p className="text-[9px] text-slate-500">Enable to show a 3D Cyber-Globe on your bio page.</p>
-                                </section>
-                            </div>
-                        )}
+                            <section className="glass p-6 rounded-2xl space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-blue-400 font-bold uppercase tracking-widest text-sm flex items-center gap-2"><Map size={16} /> 3D Geo-Location</h2>
+                                    <input type="checkbox" name="show_3d_map" defaultChecked={profile.show_3d_map} className="accent-blue-500 w-5 h-5" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <input name="map_lat" type="number" step="any" defaultValue={profile.map_lat} placeholder="Latitude" className="bg-slate-900/50 border-white/10 rounded-lg px-3 py-2 text-xs" />
+                                    <input name="map_lng" type="number" step="any" defaultValue={profile.map_lng} placeholder="Longitude" className="bg-slate-900/50 border-white/10 rounded-lg px-3 py-2 text-xs" />
+                                </div>
+                                <p className="text-[9px] text-slate-500">Enable to show a 3D Cyber-Globe on your bio page.</p>
+                            </section>
+                        </div>
 
                         {/* Floating Save Button */}
                         <div className="fixed bottom-20 left-4 right-4 z-40 sm:static sm:mt-8">

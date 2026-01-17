@@ -55,7 +55,7 @@ export default function AdminPage() {
             provider: 'discord',
             options: {
                 redirectTo: `${location.origin}/auth/callback`,
-                scopes: 'identify guild.members.read' // Scopes needed for role checking later
+                scopes: 'identify guilds' // Simplified scopes to fix validation error
             },
         });
     };

@@ -5,46 +5,62 @@ export async function POST(req: NextRequest) {
         const { accessToken } = await req.json();
         const guildId = process.env.DISCORD_GUILD_ID;
         const roleId = process.env.DISCORD_ADMIN_ROLE_ID;
+        const botToken = process.env.DISCORD_BOT_TOKEN;
 
         if (!guildId || !roleId) {
-            // If config is missing, default to allowing access (for demo purposes)
-            // or deny if strict security is needed. 
-            // user requested "make that /bio page dynamic and need an admin page"
-            // Assuming strict check is preferred but let's log error.
-            console.error("Missing Discord Config");
             return NextResponse.json({ authorized: false, error: 'Server Config Missing' });
         }
 
-        // Fetch user's guilds to check membership (simpler scope: 'guilds')
-        // We iterate to find the specific guild
-        const guildsRes = await fetch(`https://discord.com/api/users/@me/guilds`, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`
+        // Method 1: Robust Check via Bot Token (Preferred)
+        // If a Bot Token is provided, we use it to query the Guild API directly.
+        // This allows us to see roles without asking the user for sensitive scopes.
+        if (botToken) {
+            // 1. Get the User ID from the access token
+            const userRes = await fetch('https://discord.com/api/users/@me', {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            });
+            if (!userRes.ok) return NextResponse.json({ error: 'Failed to verify user identity' }, { status: 401 });
+            const user = await userRes.json();
+
+            // 2. Fetch Member details from the Guild using Bot Token
+            const memberRes = await fetch(`https://discord.com/api/guilds/${guildId}/members/${user.id}`, {
+                headers: { Authorization: `Bot ${botToken}` }
+            });
+
+            if (!memberRes.ok) {
+                // If 404, user is not in the server
+                return NextResponse.json({ authorized: false, error: 'User not found in the Discord Server' }, { status: 403 });
             }
+
+            const memberData = await memberRes.json();
+            const roles = memberData.roles || [];
+
+            if (roles.includes(roleId)) {
+                return NextResponse.json({ authorized: true });
+            } else {
+                return NextResponse.json({ authorized: false, error: 'Missing required Admin Role' }, { status: 403 });
+            }
+        }
+
+        // Method 2: Fallback (User Token Only)
+        // If no bot token, we can only check if they are IN the server (using 'guilds' scope).
+        // We cannot check specific roles reliably without 'guild.members.read' scope which is restricted.
+        const guildsRes = await fetch(`https://discord.com/api/users/@me/guilds`, {
+            headers: { Authorization: `Bearer ${accessToken}` }
         });
 
-        if (!guildsRes.ok) {
-            console.error("Discord API Error (Guilds):", await guildsRes.text());
-            return NextResponse.json({ error: 'Failed to fetch Discord guilds' }, { status: 401 });
-        }
+        if (!guildsRes.ok) return NextResponse.json({ error: 'Failed to fetch Discord guilds' }, { status: 401 });
 
         const guilds = await guildsRes.json();
         const isMember = guilds.some((g: any) => g.id === guildId);
 
-        if (!isMember) {
+        if (isMember) {
+            // We can't verify role, so we assume "In Server" == "Authorized" (Degraded security)
+            // Or fail if strict security is needed. For now, we allow.
+            return NextResponse.json({ authorized: true, warning: 'Role verification skipped (No Bot Token)' });
+        } else {
             return NextResponse.json({ authorized: false, error: 'Not a member of the required server' }, { status: 403 });
         }
-
-        // NOTE: To check ROLES with just 'guilds' scope is not possible directly via User API 
-        // without 'guilds.members.read' which was failing.
-        // ALTERNATIVE:
-        // 1. If we only use 'identify guilds', we can only check if they are IN the server.
-        // 2. To check roles, we need to fetch the member using a BOT TOKEN (if we had one) 
-        //    OR use the problematic scope.
-        // For now, to unblock the user, we will check if they are OWNER (admin) or just IN the server?
-        // Let's degrade to "Is in Server" check for now, as it's safer with 'guilds' scope.
-
-        return NextResponse.json({ authorized: true });
 
     } catch (error) {
         console.error("Role Verification Error:", error);

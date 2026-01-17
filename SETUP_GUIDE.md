@@ -26,15 +26,24 @@ Follow these steps to configure your external services (Supabase, Discord, Verce
 
 ---
 
-## 2. Discord Developer Portal
+## 2. Discord Developer Portal (Bot & Auth)
 
 1.  Go to the [Discord Developer Portal](https://discord.com/developers/applications).
 2.  Click **New Application** and give it a name (e.g., "EBNN Admin").
-3.  Go to the **OAuth2** tab.
-    *   **Client ID**: Copy this and paste it into Supabase (Provider settings).
-    *   **Client Secret**: Reset/Copy this and paste it into Supabase.
-    *   **Redirects**: Add the Callback URL you copied from Supabase (step 1.C.4).
-4.  **Save Changes** in both Discord Portal and Supabase Dashboard.
+3.  **OAuth2 Tab**:
+    *   **Client ID**: Copy this and paste it into Supabase.
+    *   **Client Secret**: Copy this and paste it into Supabase.
+    *   **Redirects**: Add the Callback URL you copied from Supabase.
+4.  **Bot Tab**:
+    *   Click **Reset Token** and copy the new Token.
+    *   Save this as `DISCORD_BOT_TOKEN` in your environment (Vercel/.env).
+    *   Ensure **Privileged Gateway Intents** (Server Members Intent) is enabled if needed, though for basic role modification via API it's less critical than just having the bot token.
+5.  **Installation / Invite Bot**:
+    *   Go to **OAuth2** -> **URL Generator**.
+    *   Select scopes: `bot`.
+    *   Select permissions: `Administrator` (or just `Manage Roles`/`View Channels` if you want to be granular).
+    *   Copy the generated URL.
+    *   Open it in a browser and invite the Bot to your Discord Server.
 
 ---
 
@@ -66,16 +75,9 @@ Follow these steps to configure your external services (Supabase, Discord, Verce
 | `GOOGLE_PRIVATE_KEY` | Private Key (include `-----BEGIN...`) | Google Cloud JSON Key |
 | `CONTACT_SHEET_ID` | Sheet ID to save contacts | Google Sheet URL |
 | `SUBSCRIBE_SHEET_ID` | Sheet ID to save subs | Google Sheet URL |
-| `CONTACT_PERSONAL_MAIL` | Your personal email | Where you want to receive new contact alerts |
+| `CONTACT_PERSONAL_MAIL` | Your personal email | For alerts |
+| `DISCORD_GUILD_ID` | Your Server ID | Right-click Server -> Copy ID |
+| `DISCORD_ADMIN_ROLE_ID` | ID of the Admin Role | Server Settings -> Roles -> Copy ID |
+| `DISCORD_BOT_TOKEN` | Bot Token | Discord Dev Portal -> Bot -> Token |
 
 3.  **Deploy**.
-
----
-
-## 5. Discord Server Setup (For future Role-Based Access)
-
-*Currently, the app authenticates any valid Discord user. To enforce strict Admin roles later:*
-1.  Enable "Developer Mode" in your Discord User Settings -> Advanced.
-2.  Right-click your Server -> **Copy Server ID**.
-3.  Go to Server Settings -> Roles -> Right-click your "Admin" role -> **Copy Role ID**.
-4.  (Future update requirement): You will need to add these IDs to your environment variables if you enable strict role checking in the code.

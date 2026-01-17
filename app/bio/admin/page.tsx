@@ -91,44 +91,75 @@ export default function AdminPage() {
     async function updateProfile(e: React.FormEvent) {
         e.preventDefault();
         setUploading(true);
-        const formData = new FormData(e.target as HTMLFormElement);
+        console.log("Starting Profile Update...");
 
-        const avatarFile = (formData.get('avatar_file') as File);
-        const coverFile = (formData.get('cover_file') as File);
-        const musicFile = (formData.get('music_file') as File);
-        const bgFile = (formData.get('bg_file') as File);
+        try {
+            const formData = new FormData(e.target as HTMLFormElement);
 
-        let updates: any = {
-            name: formData.get('name'),
-            bio: formData.get('bio'),
-            music_title: formData.get('music_title'),
-            music_artist: formData.get('music_artist'),
-            theme_color: formData.get('theme_color'),
-            font_family: formData.get('font_family'),
-            show_3d_map: formData.get('show_3d_map') === 'on',
-            map_lat: parseFloat(formData.get('map_lat') as string) || 0,
-            map_lng: parseFloat(formData.get('map_lng') as string) || 0,
-            socials: {
-                twitter: formData.get('social_twitter'),
-                instagram: formData.get('social_instagram'),
-                github: formData.get('social_github'),
-                linkedin: formData.get('social_linkedin')
+            const avatarFile = (formData.get('avatar_file') as File);
+            const coverFile = (formData.get('cover_file') as File);
+            const musicFile = (formData.get('music_file') as File);
+            const bgFile = (formData.get('bg_file') as File);
+
+            let updates: any = {
+                name: formData.get('name'),
+                bio: formData.get('bio'),
+                music_title: formData.get('music_title'),
+                music_artist: formData.get('music_artist'),
+                theme_color: formData.get('theme_color'),
+                font_family: formData.get('font_family'),
+                show_3d_map: formData.get('show_3d_map') === 'on',
+                // Handle lat/lng parsing safely
+                map_lat: formData.get('map_lat') ? parseFloat(formData.get('map_lat') as string) : 0,
+                map_lng: formData.get('map_lng') ? parseFloat(formData.get('map_lng') as string) : 0,
+                socials: {
+                    twitter: formData.get('social_twitter'),
+                    instagram: formData.get('social_instagram'),
+                    github: formData.get('social_github'),
+                    linkedin: formData.get('social_linkedin')
+                }
+            };
+
+            // Sequential Uploads with Error Logging
+            if (avatarFile && avatarFile.size > 0) {
+                console.log("Uploading Avatar...");
+                const url = await uploadFile(avatarFile);
+                if (url) updates.avatar_url = url;
             }
-        };
+            if (coverFile && coverFile.size > 0) {
+                console.log("Uploading Cover...");
+                const url = await uploadFile(coverFile);
+                if (url) updates.music_cover_url = url;
+            }
+            if (musicFile && musicFile.size > 0) {
+                console.log("Uploading Music...");
+                const url = await uploadFile(musicFile);
+                if (url) updates.music_url = url;
+            }
+            if (bgFile && bgFile.size > 0) {
+                console.log("Uploading BG...");
+                const url = await uploadFile(bgFile);
+                if (url) updates.bg_image_url = url;
+            }
 
-        if (avatarFile.size > 0) updates.avatar_url = await uploadFile(avatarFile);
-        if (coverFile.size > 0) updates.music_cover_url = await uploadFile(coverFile);
-        if (musicFile.size > 0) updates.music_url = await uploadFile(musicFile);
-        if (bgFile.size > 0) updates.bg_image_url = await uploadFile(bgFile);
+            console.log("Sending Updates to DB:", updates);
+            const { error } = await supabase.from('bio_profile').update(updates).eq('id', profile.id);
 
-        const { error } = await supabase.from('bio_profile').update(updates).eq('id', profile.id);
-        if (!error) {
-            alert("Changes Saved!");
-            // Refresh profile data completely to ensure nested JSON is up to date
-            const { data: refreshed } = await supabase.from('bio_profile').select('*').single();
-            setProfile(refreshed);
+            if (error) {
+                console.error("Supabase Error:", error);
+                alert(`Update Failed: ${error.message}\n(Hint: Did you run the 'supabase_schema_update.sql' script in Supabase?)`);
+            } else {
+                alert("Changes Saved Successfully!");
+                const { data: refreshed } = await supabase.from('bio_profile').select('*').single();
+                setProfile(refreshed);
+            }
+
+        } catch (err: any) {
+            console.error("Unexpected Error:", err);
+            alert("Critical Error: " + err.message);
+        } finally {
+            setUploading(false); // Ensure spinner stops
         }
-        setUploading(false);
     }
 
     // --- Link Operations ---
